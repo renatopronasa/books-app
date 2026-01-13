@@ -1,167 +1,120 @@
-# Books App 📚
+# 📚 Books-Apps
 
-**Aplicação para gerenciamento e visualização de livros** com backend em Node.js/Express + MySQL e frontend em React.
+Aplicação full stack para gerenciamento de livros, desenvolvida como parte de um processo seletivo técnico.
 
----
-
-## 🔧 Funcionalidades
-
-- Listar livros, buscar por termo
-- Visualizar detalhes de um livro
-- Criar, editar e remover livros (com upload de imagem)
-- API REST simples e frontend com React
+O projeto é dividido em **Front-end (React)** e **Back-end (Node.js)**, com **API REST**, **banco de dados** e **conteinerização com Docker e Docker Compose**.
 
 ---
 
-## 🚀 Tecnologias
+## 🚀 Tecnologias Utilizadas
 
-- Backend: Node.js, Express, MySQL (mysql2), Multer
-- Frontend: React (Create React App), Axios, Tailwind CSS
-- Dev/Test: Jest, Supertest, Nodemon
-- Orquestração (opcional): Docker & Docker Compose
+### Front-end
+
+* React
+* JavaScript
+* Axios
+* CSS / Tailwind 
+
+### Back-end
+
+* Node.js
+* Express
+* API REST
+* Banco de dados relacional Mysql
+* Docker
+* Docker Compose
 
 ---
 
-## 📦 Requisitos
+## ⚙️ Configuração do Ambiente
 
-- Node.js (>= 18 recomendado)
-- npm ou yarn
-- Docker & Docker Compose (recomendado para ambiente completo)
+### Pré-requisitos
+
+* Docker
+* Docker Compose
+* Node.js
+* Multer (upload de arquivos)
+* Arquitetura MVC (Controller / Service / Repository)
 
 ---
 
-## Início rápido
+## 🐳 Executando o Projeto com Docker
 
-### Opção A — Usar Docker Compose (recomendado)
-
-1. Na raiz do projeto, execute:
+Na raiz do projeto (`books-app/backend`), execute:
 
 ```bash
 docker-compose up --build
 ```
 
-2. O Compose sobe:
-- MySQL (container `books_mysql`) com banco `booksdb` (script de inicialização em `backend/db/init.sql`)
-- API (container `books_api`) na porta **3001**
+Isso irá:
 
-> Observação: o serviço `backend` lê variáveis do arquivo `backend/.env` (o Compose referencia `./backend/.env`). Quando executado via Docker Compose, a variável `DB_HOST` pode ser `mysql` (nome do serviço). Caso rode o backend localmente, use `DB_HOST=127.0.0.1` e ajuste conforme sua configuração.
+* Subir a API Node.js
+* Subir o banco de dados
+* Expor a API para consumo do front-end
 
-### Opção B — Rodar localmente (sem Docker)
+A API estará disponível em: http://localhost:3001
 
-Backend:
-
-```bash
-cd backend
-npm install
-# criar um arquivo .env (ex.: backend/.env) com as variáveis abaixo
-npm run dev
-```
-
-Frontend:
+- Para instalar as dependencias, na raiz do projeto (`books-app/frontend`), execute:
 
 ```bash
-cd frontend
-npm install
-npm start
+npm install 
 ```
 
-Acesse o frontend em: http://localhost:3000 (o frontend espera a API em http://localhost:3001)
-
----
-
-## Variáveis de ambiente (exemplo `backend/.env`)
-
-```env
-PORT=3001
-DB_HOST=mysql
-DB_USER=root
-DB_PASSWORD=root
-DB_NAME=booksdb
-```
-
-> Se iniciar com Docker Compose, `DB_HOST` = `mysql` (nome do serviço). Para conectar a um MySQL em execução localmente use `DB_HOST=127.0.0.1` e ajuste porta conforme necessário.
-
----
-
-## Endpoints da API 📡
-
-Base: `http://localhost:3001` (quando em Docker Compose, o container backend escuta 3001)
-
-- GET /books
-  - Lista livros. Aceita query `q` para busca.
-- GET /books/:id
-  - Retorna um livro por ID.
-- POST /books
-  - Cria um livro. Aceita `multipart/form-data` com campo `image` (arquivo) ou corpo JSON com `image` (URL).
-  - Campos: `title`, `author`, `publishedAt` (YYYY-MM-DD), `description`, `image` (url) ou `image` via form-data
-- PUT /books/:id
-  - Atualiza livro. Similar ao POST; envie `image` para substituir a imagem (arquivo) ou `image` como string para definir/limpar.
-- DELETE /books/:id
-  - Remove um livro.
-
-Exemplo de upload (curl):
+- Para rodar a aplicação
 
 ```bash
-curl -X POST -F "title=Meu Livro" -F "author=Autor" -F "image=@./capa.jpg" http://localhost:3001/books
+npm start - para rodar a aplicação
 ```
 
----
-
-## Banco de dados
-
-- O projeto usa MySQL; o script `backend/db/init.sql` cria o banco `booksdb`, tabela `books` e insere alguns exemplos.
+A aplicação estará disponível em: http://localhost:3000
 
 ---
 
-## Testes
+## 📌 Funcionalidades
 
-Backend (requer banco disponível conforme variáveis de ambiente):
-
-```bash
-cd backend
-npm test
-```
-
-Frontend:
-
-```bash
-cd frontend
-npm test
-```
+* Listar livros
+* Cadastrar novo livro
+* Editar livro existente
+* Excluir livro
+* Comunicação completa entre Front-end e API REST
 
 ---
 
-## Estrutura do projeto
+## 🖼️ Upload de Imagens
 
-- backend/
-  - src/: código do servidor (controllers, services, models)
-  - db/init.sql: criação + seed de dados
-  - uploads/: imagens enviadas (servidas estaticamente em `/uploads`)
-- frontend/
-  - src/: React components, pages, serviços
+As capas dos livros são armazenadas via **URL** (local ou externa).
 
----
+Exemplo:
 
-## Observações importantes
+* URL local:
+  `http://localhost:3001/uploads/nome-da-imagem.jpg`
+* URL externa:
+  `https://images-na.ssl-images-amazon.com/...`
 
-- Imagens enviadas são salvas em `backend/uploads` e servidas em `/uploads`.
-- Ao atualizar uma imagem via PUT, se houver imagem local anterior ela é removida (quando possível).
-- O `docker-compose.yml` mapeia a porta MySQL para `3307` no host; quando o backend é executado como container, ele se conecta internamente ao serviço `mysql` (não precisa do mapeamento de host).
+Essa abordagem foi escolhida por ser simples, escalável e adequada para ambientes de teste técnico.
 
 ---
 
-## Contribuições
+## 🧪 Testes
 
-Contribuições são bem-vindas! Abra uma issue ou envie um pull request descrevendo a mudança.
+O back-end possui testes automatizados para os principais fluxos do CRUD de livros, garantindo:
+
+* Criação
+* Leitura
+* Atualização
+* Remoção
 
 ---
 
-## Licença
+## 📄 Observações Importantes
 
-Este projeto utiliza licença **ISC** (conforme `backend/package.json`).
+* O front-end e o back-end são **aplicações independentes**
+* A comunicação é feita exclusivamente via API REST
+* O projeto simula um ambiente real de desenvolvimento profissional
+* Estrutura pensada para fácil manutenção e evolução
 
 ---
 
-## Contato
+## 👨‍💻 Autor
 
-Se quiser que eu melhore o README (ex.: adicionar badges, guias de deploy, ou tradução para inglês), posso ajustar conforme preferir. ✅
+Projeto desenvolvido por **Renato Santos**
