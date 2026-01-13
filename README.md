@@ -1,167 +1,170 @@
-# Books App 📚
+# 📚 Books-Apps
 
-**Aplicação para gerenciamento e visualização de livros** com backend em Node.js/Express + MySQL e frontend em React.
+Aplicação full stack para gerenciamento de livros, desenvolvida como parte de um processo seletivo técnico.
 
----
-
-## 🔧 Funcionalidades
-
-- Listar livros, buscar por termo
-- Visualizar detalhes de um livro
-- Criar, editar e remover livros (com upload de imagem)
-- API REST simples e frontend com React
+O projeto é dividido em **Front-end (React)** e **Back-end (Node.js)**, com **API REST**, **banco de dados** e **conteinerização com Docker e Docker Compose**.
 
 ---
 
-## 🚀 Tecnologias
+## 🚀 Tecnologias Utilizadas
 
-- Backend: Node.js, Express, MySQL (mysql2), Multer
-- Frontend: React (Create React App), Axios, Tailwind CSS
-- Dev/Test: Jest, Supertest, Nodemon
-- Orquestração (opcional): Docker & Docker Compose
+### Front-end
+
+* React
+* JavaScript
+* Axios
+* CSS / Tailwind 
+
+### Back-end
+
+* Node.js
+* Express
+* API REST
+* Banco de dados relacional Mysql
+* Docker
+* Docker Compose
 
 ---
 
-## 📦 Requisitos
+## ⚙️ Configuração do Ambiente
 
-- Node.js (>= 18 recomendado)
-- npm ou yarn
-- Docker & Docker Compose (recomendado para ambiente completo)
+## ⚙️ Pré-requisitos
+
+Para executar o projeto localmente, é necessário ter instalado:
+
+- Docker
+- Docker Compose
+- Node.js (apenas para rodar o front-end em modo desenvolvimento)
 
 ---
 
-## Início rápido
+## 🐳 Executando o Projeto com Docker (Back-end)
 
-### Opção A — Usar Docker Compose (recomendado)
-
-1. Na raiz do projeto, execute:
+Na **raiz do projeto** (`books-app`), execute:
 
 ```bash
 docker-compose up --build
 ```
 
-2. O Compose sobe:
-- MySQL (container `books_mysql`) com banco `booksdb` (script de inicialização em `backend/db/init.sql`)
-- API (container `books_api`) na porta **3001**
+Esse comando irá:
 
-> Observação: o serviço `backend` lê variáveis do arquivo `backend/.env` (o Compose referencia `./backend/.env`). Quando executado via Docker Compose, a variável `DB_HOST` pode ser `mysql` (nome do serviço). Caso rode o backend localmente, use `DB_HOST=127.0.0.1` e ajuste conforme sua configuração.
+* Subir a API Node.js
 
-### Opção B — Rodar localmente (sem Docker)
+* Subir o banco de dados MySQL
 
-Backend:
+* Configurar automaticamente a comunicação entre API e banco
+
+* Expor a API para consumo do front-end
+
+Após a inicialização, a API estará disponível em:
 
 ```bash
-cd backend
-npm install
-# criar um arquivo .env (ex.: backend/.env) com as variáveis abaixo
-npm run dev
+http://localhost:3001
+```
+▶️ Executando o Front-end (React)
+
+Em outro terminal, acesse a pasta do front-end:
+
+```bash
+cd books-app/frontend
 ```
 
-Frontend:
+Instale as dependências:
 
 ```bash
-cd frontend
 npm install
+```
+
+Inicie a aplicação:
+
+```bash
 npm start
 ```
 
-Acesse o frontend em: http://localhost:3000 (o frontend espera a API em http://localhost:3001)
-
----
-
-## Variáveis de ambiente (exemplo `backend/.env`)
-
-```env
-PORT=3001
-DB_HOST=mysql
-DB_USER=root
-DB_PASSWORD=root
-DB_NAME=booksdb
-```
-
-> Se iniciar com Docker Compose, `DB_HOST` = `mysql` (nome do serviço). Para conectar a um MySQL em execução localmente use `DB_HOST=127.0.0.1` e ajuste porta conforme necessário.
-
----
-
-## Endpoints da API 📡
-
-Base: `http://localhost:3001` (quando em Docker Compose, o container backend escuta 3001)
-
-- GET /books
-  - Lista livros. Aceita query `q` para busca.
-- GET /books/:id
-  - Retorna um livro por ID.
-- POST /books
-  - Cria um livro. Aceita `multipart/form-data` com campo `image` (arquivo) ou corpo JSON com `image` (URL).
-  - Campos: `title`, `author`, `publishedAt` (YYYY-MM-DD), `description`, `image` (url) ou `image` via form-data
-- PUT /books/:id
-  - Atualiza livro. Similar ao POST; envie `image` para substituir a imagem (arquivo) ou `image` como string para definir/limpar.
-- DELETE /books/:id
-  - Remove um livro.
-
-Exemplo de upload (curl):
+A aplicação estará disponível em: 
 
 ```bash
-curl -X POST -F "title=Meu Livro" -F "author=Autor" -F "image=@./capa.jpg" http://localhost:3001/books
+http://localhost:3000
 ```
 
----
-
-## Banco de dados
-
-- O projeto usa MySQL; o script `backend/db/init.sql` cria o banco `booksdb`, tabela `books` e insere alguns exemplos.
+📌 Observação:
+O back-end deve estar em execução antes de iniciar o front-end.
 
 ---
 
-## Testes
+## 📌 Funcionalidades
 
-Backend (requer banco disponível conforme variáveis de ambiente):
+* Listagem de livros
+* Cadastro de novos livros
+* Edição de livros existentes
+* Exclusão de livros
+* Comunicação completa entre Front-end e API REST
+
+---
+
+## 🖼️ Upload de Imagens
+
+As capas dos livros são armazenadas via Upload local
+
+Funcionamento
+
+* O banco de dados já possui 3 livros de exemplo cadastrados com URLs externas de imagens.
+
+* Ao criar um novo livro, o usuário pode selecionar uma imagem local.
+
+* Essa imagem é enviada para o backend via upload, armazenada na pasta uploads/ e exposta publicamente pela API.
+
+Exemplo:
+
+* URL local:
 
 ```bash
-cd backend
+http://localhost:3001/uploads/nome-da-imagem.jpg
+```
+Essa abordagem foi escolhida por ser simples, escalável e adequada para ambientes de teste técnico.
+
+---
+
+🔌 Principais Rotas da API
+
+* GET /books — lista todos os livros
+
+* GET /books/:id — retorna um livro específico
+
+* POST /books — cria um novo livro
+
+* PUT /books/:id — atualiza um livro existente
+
+* DELETE /books/:id — remove um livro
+
+---
+
+## 🧪 Testes
+
+O back-end possui testes automatizados para os principais fluxos do CRUD de livros, garantindo:
+
+* Criação
+* Leitura
+* Atualização
+* Remoção
+
+Para executar os testes:
+
+```bash
 npm test
 ```
+---
 
-Frontend:
+## 📄 Observações Importantes
 
-```bash
-cd frontend
-npm test
-```
+* O front-end e o back-end são **aplicações independentes**
+* A comunicação é feita exclusivamente via API REST
+* O projeto simula um ambiente real de desenvolvimento profissional
+* Estrutura pensada para facilitar manutenção, testes e evolução
 
 ---
 
-## Estrutura do projeto
+## 👨‍💻 Autor
 
-- backend/
-  - src/: código do servidor (controllers, services, models)
-  - db/init.sql: criação + seed de dados
-  - uploads/: imagens enviadas (servidas estaticamente em `/uploads`)
-- frontend/
-  - src/: React components, pages, serviços
+Projeto desenvolvido por **Renato Santos**
 
----
-
-## Observações importantes
-
-- Imagens enviadas são salvas em `backend/uploads` e servidas em `/uploads`.
-- Ao atualizar uma imagem via PUT, se houver imagem local anterior ela é removida (quando possível).
-- O `docker-compose.yml` mapeia a porta MySQL para `3307` no host; quando o backend é executado como container, ele se conecta internamente ao serviço `mysql` (não precisa do mapeamento de host).
-
----
-
-## Contribuições
-
-Contribuições são bem-vindas! Abra uma issue ou envie um pull request descrevendo a mudança.
-
----
-
-## Licença
-
-Este projeto utiliza licença **ISC** (conforme `backend/package.json`).
-
----
-
-## Contato
-
-Se quiser que eu melhore o README (ex.: adicionar badges, guias de deploy, ou tradução para inglês), posso ajustar conforme preferir. ✅
