@@ -28,7 +28,7 @@ O projeto é dividido em **Front-end (React)** e **Back-end (Node.js)**, com **A
 
 ## ⚙️ Configuração do Ambiente
 
-## ⚙️ Pré-requisitos
+* Pré-requisitos
 
 Para executar o projeto localmente, é necessário ter instalado:
 
@@ -139,20 +139,32 @@ Essa abordagem foi escolhida por ser simples, escalável e adequada para ambient
 
 ---
 
-## 🧪 Testes
+## 🧪 Testes Automatizados
 
-O back-end possui testes automatizados para os principais fluxos do CRUD de livros, garantindo:
+Este projeto possui testes automatizados utilizando **Jest** e **Supertest**, executados dentro do ambiente Docker para garantir consistência entre desenvolvimento e produção.
 
-* Criação
-* Leitura
-* Atualização
-* Remoção
+### ▶️ Executando os testes
 
-Para executar os testes:
+Com os containers em execução:
 
 ```bash
-npm test
+docker compose up -d
 ```
+Execute os testes no backend:
+
+```bash
+docker compose exec backend npm test
+```
+
+Os testes validam o fluxo completo da API de livros:
+
+* Criar um livro (POST /books)
+
+* Listar livros (GET /books)
+
+* Atualizar um livro (PUT /books/:id)
+
+* Remover um livro (DELETE /books/:id)
 ---
 
 ## 📄 Observações Importantes
