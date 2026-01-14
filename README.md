@@ -1,4 +1,4 @@
-# 📚 Books-Apps
+# 📚 Books-App
 
 Aplicação full stack para gerenciamento de livros, desenvolvida como parte de um processo seletivo técnico.
 
