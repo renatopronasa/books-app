@@ -1,22 +1,29 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 
 const bookRoutes = require('./routes/book.routes');
 
 const app = express();
 
+// Middlewares globais
 app.use(cors());
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
-
-app.use((req, res, next) => {
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  next();
-});
-
+// Rotas
 app.use('/books', bookRoutes);
 
-module.exports = app;
+// Rota de health check (opcional, mas recomendada)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
 
+// ✅ Middleware de erro (SEMPRE O ÚLTIMO)
+app.use((err, req, res, next) => {
+  console.error('🔥 ERRO NA API:', err);
+
+  res.status(500).json({
+    message: 'Erro interno no servidor',
+  });
+});
+
+module.exports = app;

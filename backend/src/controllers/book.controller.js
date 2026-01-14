@@ -6,12 +6,17 @@ class BookController {
   async index(req, res) {
     const q = req.query.q;
     const books = await service.findAll(q);
+
     const host = `${req.protocol}://${req.get('host')}`;
     const mapped = books.map(b => ({
       ...b,
-      image_url: b.image_url && !b.image_url.startsWith('http') ? `${host}${b.image_url}` : b.image_url
+      image_url:
+        b.image_url && !b.image_url.startsWith('http')
+          ? `${host}${b.image_url}`
+          : b.image_url
     }));
-    return res.json(mapped);
+
+    return res.status(200).json(mapped);
   }
 
   async show(req, res) {
@@ -26,7 +31,7 @@ class BookController {
       book.image_url = `${host}${book.image_url}`;
     }
 
-    return res.json(book);
+    return res.status(200).json(book);
   }
 
   async store(req, res) {
@@ -39,6 +44,7 @@ class BookController {
     } = req.body;
 
     let imageUrl = null;
+
     if (req.file) {
       imageUrl = `/uploads/${req.file.filename}`;
     } else if (image) {
@@ -66,12 +72,19 @@ class BookController {
     } = req.body;
 
     const existing = await service.findById(req.params.id);
-    let imageUrl = existing ? existing.image_url : null;
+
+    if (!existing) {
+      return res.sendStatus(404);
+    }
+
+    let imageUrl = existing.image_url;
+
     if (req.file) {
-      if (existing && existing.image_url && !existing.image_url.startsWith('http')) {
+      if (existing.image_url && !existing.image_url.startsWith('http')) {
         const uploadsDir = path.resolve(__dirname, '..', '..', 'uploads');
         const oldFilename = path.basename(existing.image_url);
         const oldPath = path.join(uploadsDir, oldFilename);
+
         try {
           if (fs.existsSync(oldPath)) {
             fs.unlinkSync(oldPath);
@@ -93,11 +106,34 @@ class BookController {
       image_url: imageUrl
     });
 
-    return res.sendStatus(204);
+    return res.status(200).json({
+      message: 'Livro atualizado com sucesso'
+    });
   }
 
   async delete(req, res) {
+    const existing = await service.findById(req.params.id);
+
+    if (!existing) {
+      return res.sendStatus(404);
+    }
+
+    if (existing.image_url && !existing.image_url.startsWith('http')) {
+      const uploadsDir = path.resolve(__dirname, '..', '..', 'uploads');
+      const filename = path.basename(existing.image_url);
+      const filePath = path.join(uploadsDir, filename);
+
+      try {
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      } catch (err) {
+        
+      }
+    }
+
     await service.delete(req.params.id);
+
     return res.sendStatus(204);
   }
 }
